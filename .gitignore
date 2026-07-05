@@ -1,0 +1,14 @@
+# Abaikan folder virtual environment
+.venv/
+venv/
+env/
+
+# Abaikan cache otomatis Python
+**/__pycache__/
+*.pyc
+
+# Abaikan database lokal 
+*.sqlite3
+
+# Abaikan folder static 
+staticfiles/

@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+</head>
+
+</head>
+    
+    <link rel="apple-touch-icon" href="{% static 'gambar/rumah.png' %}">
+    <link rel="shortcut icon" href="{% static 'gambar/rumah.png' %}">
+    
+    <title>Hasil Proses Stemming</title>
+</head>
+<body>
+
+<h1 class="head">Hasil Proses Stemming Bahasa Sunda</h1>
+
+<div class="container">
+
+    <div style="margin-bottom:20px;">
+        <a href="{% url 'home' %}" class="btn-reset">
+            ← Kembali
+        </a>
+    </div>
+
+{% if dataset %}
+    <hr style="margin-top: 30px; margin-bottom: 20px;">
+
+    <p><strong>Dataset Asli:</strong></p>
+    <div class="scrollable-div result-box">{{ dataset }}</div>
+
+    <p><strong>Proses Cleansing & Case Folding :</strong></p>
+    <div class="scrollable-div result-box">{{ proses }}</div>
+
+    <p><strong>Tokenizing & Filtering :</strong></p>
+    <div class="result-box" style="max-height: 200px; overflow-y: auto; background: #fff;">
+        {% for t in remove_stopword %}
+            <span class="token-badge">{{ t }}</span>
+        {% endfor %}
+    </div>
+
+    <p><strong>Hasil Stemming :</strong></p>
+    <table class="tabel-hasil">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Kata Asli (Token)</th>
+                <th>Kata Dasar (Stem)</th>
+                <th>Status Stemming</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in stemming_data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ data.tokens }}</td>
+                <td>{{ data.stem }}</td>
+                <td>
+                    {% if data.is_correct %}
+                        <span style="color: green; font-weight: bold;">Valid</span>
+                    {% else %}
+                        <span style="color: red; font-weight: bold;">Tidak Valid</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p style="margin-top: 15px;"><strong>Running Time:</strong> {{ running_time }} detik</p>
+
+    <div class="box-evaluasi">
+        <h4>Hasil Evaluasi:</h4>
+        <p>Total Kata : <strong>{{ total_kata }}</strong></p>
+        <p>Kata Valid : <strong>{{ kata_benar }}</strong></p>
+        <p>Akurasi Sistem: <strong class="text-akurasi">{{ akurasi }}%</strong></p>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'export' %}" class="btn-export">Export ke CSV</a>
+    </div>
+    
+    {% endif %}

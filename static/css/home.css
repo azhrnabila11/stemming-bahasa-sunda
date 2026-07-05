@@ -1,0 +1,185 @@
+/* =========================================
+   Gaya Global & Layout Utama
+   ========================================= */
+body {
+    font-family: Arial, sans-serif; /* Boleh disesuaikan dengan selera */
+    background-color: #ffffff;
+}
+
+.head {
+    text-align: center;
+    color: #4b633a;
+    margin-bottom: 30px;
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* =========================================
+   Gaya untuk Form Input
+   ========================================= */
+.input-textarea {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    box-sizing: border-box; /* Agar padding tidak merusak ukuran 100% */
+}
+
+.input-file {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed #4b633a;
+    width: 20%;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.btn-submit {
+    padding: 10px 20px;
+    background: #4b633a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: #3a4d2c; /* Efek gelap sedikit saat mouse di atas tombol */
+}
+
+/* =========================================
+   Gaya untuk Hasil (Jika dataset ada)
+   ========================================= */
+.result-box {
+    background: #f3d0d0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    word-wrap: break-word;
+    margin-bottom: 15px;
+}
+
+.token-badge {
+    display: inline-block;
+    background: #f3d0d0;
+    margin: 2px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.tabel-hasil {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.tabel-hasil th {
+    background-color: #4b633a;
+    color: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tabel-hasil td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.btn-export {
+    padding: 10px 20px; 
+    background: #4b633a; 
+    color: white; 
+    text-decoration: none; 
+    border-radius: 5px; 
+    font-weight: bold;
+}
+
+.btn-reset {
+    padding: 10px 20px; 
+    background: #6c757d; 
+    color: white; 
+    text-decoration: none; 
+    border-radius: 5px; 
+    font-weight: bold; 
+    margin-left: 10px;
+}
+
+.box-evaluasi {
+    margin-top: 30px; 
+    padding: 20px; 
+    background: #f3d0d0;
+    border-radius: 5px; 
+    border: 1px solid #ddd;
+}
+
+.text-akurasi {
+    color: #28a745;
+}
+
+/* --- MANTRA AGAR LAYAR HP TIDAK KEPOTONG --- */
+
+/* 1. Memastikan garis kotak tidak menambah ukuran asli */
+* {
+  box-sizing: border-box;
+}
+
+/* 2. Memastikan bodi, form, dan teks tidak melebihi batas layar */
+body, form, .container {
+  max-width: 100%;
+  overflow-x: hidden; /* Menyembunyikan bagian yang tumpah ke samping */
+}
+
+/* 3. Membuat kotak teks (textarea) otomatis mengecil di HP */
+textarea {
+  width: 100%; /* Memaksa kotak teks menyesuaikan lebar layar */
+  max-width: 100%;
+  padding: 10px;
+}
+
+/* --- MANTRA TABEL PINTAR (RESPONSIVE) --- */
+
+/* 1. Pengaturan Default (Untuk Desktop): Tabel melebar full 100% */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* 2. Pengaturan Khusus (Hanya aktif jika layar seukuran HP/Tablet) */
+@media screen and (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto; /* Memunculkan scroll bar horizontal di HP */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Agar teks di dalam tabel tidak berantakan turun ke bawah */
+th, td {
+  white-space: nowrap; 
+}
+
+/* --- MANTRA UNTUK KOTAK UPLOAD FILE AGAR TIDAK KEPOTONG --- */
+input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Menyembunyikan teks yang kelebihan */
+  text-overflow: ellipsis; /* Mengubah teks yang kepotong menjadi titik-titik (...) */
+  white-space: nowrap; /* Mencegah teks turun ke bawah dan merusak kotak */
+}
+
+.scrollable-div {
+  height: 300px; /* Tentukan tinggi wadah */
+  overflow-y: auto; /* Memunculkan scrollbar vertikal jika konten kepanjangan */
+  border: 1px solid #ccc; /* Opsional: untuk batas visual */
+  padding: 10px;
+}
