@@ -130,7 +130,6 @@ def stemming_process(request):
                     teks_input = " ".join(col_data.dropna().astype(str).tolist())
 
             except Exception as e:
-                # Jika ada error saat membaca file, tampilkan di terminal
                 print(f"Error reading file: {e}")
 
        
