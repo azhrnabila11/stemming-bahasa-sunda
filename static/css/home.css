@@ -2,7 +2,7 @@
    Gaya Global & Layout Utama
    ========================================= */
 body {
-    font-family: Arial, sans-serif; /* Boleh disesuaikan dengan selera */
+    font-family: Arial, sans-serif; 
     background-color: #ffffff;
 }
 
@@ -28,7 +28,7 @@ body {
     border-radius: 5px;
     border: 1px solid #ccc;
     margin-top: 10px;
-    box-sizing: border-box; /* Agar padding tidak merusak ukuran 100% */
+    box-sizing: border-box;
 }
 
 .input-file {
@@ -126,27 +126,22 @@ body {
     color: #28a745;
 }
 
-/* --- MANTRA AGAR LAYAR HP TIDAK KEPOTONG --- */
-
-/* 1. Memastikan garis kotak tidak menambah ukuran asli */
 * {
   box-sizing: border-box;
 }
 
-/* 2. Memastikan bodi, form, dan teks tidak melebihi batas layar */
 body, form, .container {
   max-width: 100%;
-  overflow-x: hidden; /* Menyembunyikan bagian yang tumpah ke samping */
+  overflow-x: hidden; 
 }
 
-/* 3. Membuat kotak teks (textarea) otomatis mengecil di HP */
+/* Membuat kotak teks (textarea) otomatis mengecil di HP */
 textarea {
-  width: 100%; /* Memaksa kotak teks menyesuaikan lebar layar */
+  width: 100%; 
   max-width: 100%;
   padding: 10px;
 }
 
-/* --- MANTRA TABEL PINTAR (RESPONSIVE) --- */
 
 /* 1. Pengaturan Default (Untuk Desktop): Tabel melebar full 100% */
 table {
@@ -168,18 +163,18 @@ th, td {
   white-space: nowrap; 
 }
 
-/* --- MANTRA UNTUK KOTAK UPLOAD FILE AGAR TIDAK KEPOTONG --- */
+/* UNTUK KOTAK UPLOAD FILE AGAR TIDAK KEPOTONG */
 input[type="file"] {
   width: 100%;
   max-width: 100%;
   overflow: hidden; /* Menyembunyikan teks yang kelebihan */
   text-overflow: ellipsis; /* Mengubah teks yang kepotong menjadi titik-titik (...) */
-  white-space: nowrap; /* Mencegah teks turun ke bawah dan merusak kotak */
+  white-space: nowrap; /* Mencegah teks turun ke bawah */
 }
 
 .scrollable-div {
-  height: 300px; /* Tentukan tinggi wadah */
+  height: 300px; 
   overflow-y: auto; /* Memunculkan scrollbar vertikal jika konten kepanjangan */
-  border: 1px solid #ccc; /* Opsional: untuk batas visual */
+  border: 1px solid #ccc; 
   padding: 10px;
 }
