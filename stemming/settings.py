@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()  # Membaca file .env
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-9t0(=ijgu7ow#c1n^=12*jmxbwvbs!c5lwi=8s@z+vwde7ca#9')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
