@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/alertify.min.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/default.min.css' %}">
+
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+    <!-- <script src="{% static 'js/main.js' %}"></script> -->
+</head>
+    
+    <link rel="apple-touch-icon" href="{% static 'gambar/rumah.png' %}">
+    <link rel="shortcut icon" href="{% static 'gambar/rumah.png' %}">
+    
+    <title>Stemming Sunda</title>
+</head>
+<body>
+
+<h1 class="head">Stemming Dokumen Teks Bahasa Sunda</h1>
+
+<div class="container">
+    
+    <form method="POST" action="{% url 'stemming' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label><b>Masukkan Teks Manual:</b></label><br>
+        <textarea name="input_text" class="input-textarea">{{ dataset }}</textarea>
+        
+        <br><br>
+
+        <label><b>Upload File (Word / Excel / Text):</b></label><br>
+        <input type="file" name="upload_file" class="input-file">
+        
+        <br><br>
+
+        <button type="submit" class="btn-submit">Proses</button>
+    </form>
+</div>
+</body>
+</html>

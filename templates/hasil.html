@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+</head>
+
+</head>
+    
+    <link rel="apple-touch-icon" href="{% static 'gambar/rumah.png' %}">
+    <link rel="shortcut icon" href="{% static 'gambar/rumah.png' %}">
+    
+    <title>Hasil Proses Stemming</title>
+</head>
+<body>
+
+<h1 class="head">Hasil Proses Stemming Bahasa Sunda</h1>
+
+<div class="container">
+
+    <div style="margin-bottom:20px;">
+        <a href="{% url 'home' %}" class="btn-reset">
+            ← Kembali
+        </a>
+    </div>
+
+{% if dataset %}
+    <hr style="margin-top: 30px; margin-bottom: 20px;">
+
+    <p><strong>Dataset Asli:</strong></p>
+    <div class="scrollable-div result-box">{{ dataset }}</div>
+
+    <p><strong>Proses Cleansing & Case Folding :</strong></p>
+    <div class="scrollable-div result-box">{{ proses }}</div>
+
+    <p><strong>Tokenizing & Filtering :</strong></p>
+    <div class="result-box" style="max-height: 200px; overflow-y: auto; background: #fff;">
+        {% for t in remove_stopword %}
+            <span class="token-badge">{{ t }}</span>
+        {% endfor %}
+    </div>
+
+    <p><strong>Hasil Stemming :</strong></p>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Kata Asli (Token)</th>
+                <th>Hasil ECS Indonesia (Sastrawi)</th>
+                <th>Hasil ECS Sunda (Adaptasi)</th>
+                <th>Status Validasi Kamus Sunda</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in stemming_data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.tokens }}</td>
+                <td><span class="badge bg-secondary">{{ row.status_manual }}</span></td> 
+                <td><strong>{{ row.stem }}</strong></td>
+                <td>
+                    {% if row.is_correct %}
+                        <span class="badge bg-success">Valid</span>
+                    {% else %}
+                        <span class="badge bg-danger">Invalid</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p style="margin-top: 15px;"><strong>Running Time:</strong> {{ running_time }} detik</p>
+
+    <!-- EVALUASI PERBANDINGAN AKURASI -->
+    <div style="display: flex; gap: 20px; margin-top: 20px;">
+        <!-- Card ECS Sunda -->
+        <div class="box-evaluasi" style="flex: 1; border-left: 5px solid #28a745;">
+            <h4>ECS Sunda (Adaptasi):</h4>
+            <p>Total Kata : <strong>{{ total_kata }}</strong></p>
+            <p>Kata Valid : <strong>{{ kata_benar_sunda }}</strong></p>
+            <p>Akurasi Sistem: <strong class="text-akurasi" style="color: #28a745;">{{ akurasi_sunda }}%</strong></p>
+        </div>
+
+        <!-- Card ECS Indonesia -->
+        <div class="box-evaluasi" style="flex: 1; border-left: 5px solid #6c757d;">
+            <h4>ECS Indonesia (Sastrawi Asli):</h4>
+            <p>Total Kata : <strong>{{ total_kata }}</strong></p>
+            <p>Kata Valid : <strong>{{ kata_benar_indo }}</strong></p>
+            <p>Akurasi Sistem: <strong class="text-akurasi" style="color: #6c757d;">{{ akurasi_indo }}%</strong></p>
+        </div>
+    </div>
+
+    <div style="margin-top: 25px;">
+        <a href="{% url 'export' %}" class="btn-export">Export ke CSV</a>
+    </div>
+    
+{% endif %}
+
+</div>
+</body>
+</html>
