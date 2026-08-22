@@ -1,9 +1,7 @@
 import re
 
 class DisambiguatorSuffixRuleSunda75(object):
-    def disambiguate(self, word, kamus_dasar=None):
-        if kamus_dasar is None:
-            return None
+    def disambiguate(self, word, kamus_dasar):
 
         kandidat = []
         if word.endswith('eunana'):

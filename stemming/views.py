@@ -55,17 +55,6 @@ KONFIKS_DISAMBIGUATORS = [
     DisambiguatorPrefixSuffixRuleSunda90(),
 ]
 
-ALL_SUNDA_RULES = PREFIX_DISAMBIGUATORS + SUFFIX_DISAMBIGUATORS + KONFIKS_DISAMBIGUATORS
-for rule_obj in ALL_SUNDA_RULES:
-    orig_method = rule_obj.disambiguate
-    def make_safe(func):
-        def safe_disambiguate(word, kamus_dasar=None):
-            if kamus_dasar is None:
-                return None
-            return func(word, kamus_dasar)
-        return safe_disambiguate
-    rule_obj.disambiguate = make_safe(orig_method)
-
 def home(request):
     return render(request, 'home.html')
 
@@ -78,6 +67,10 @@ def is_valid_root(word, kamus_dasar):
 
 def ecs_sunda(word, kamus_dasar):
     original = word.lower().strip()
+    
+    if original in kamus_dasar:
+        return original, True
+    
     current = original
     max_loop = 10
     loop = 0
@@ -153,22 +146,38 @@ def stemming_process(request):
         if not teks_input and file_upload:
             nama_file = file_upload.name.lower()
             try:
+                # PROSES TXT (Gunakan .read().decode() agar biner jadi string)
                 if nama_file.endswith('.txt'):
+                    # Gunakan 'utf-8-sig' untuk menangani file TXT dari Windows (Notepad)
                     teks_input = file_upload.read().decode('utf-8-sig')
+
+                # PROSES DOCX
                 elif nama_file.endswith('.docx'):
                     doc = docx.Document(file_upload)
                     teks_input = '\n'.join([para.text for para in doc.paragraphs])
+
+                # PROSES EXCEL
                 elif nama_file.endswith('.xlsx'):
                     df = pd.read_excel(file_upload, engine='openpyxl')
                     df.columns = df.columns.str.lower().str.strip()
+                    # Ambil kolom 'isi' jika ada, jika tidak ambil kolom pertama
                     col_data = df['isi'] if 'isi' in df.columns else df.iloc[:, 0]
                     teks_input = " ".join(col_data.dropna().astype(str).tolist())
+
             except Exception as e:
                 print(f"Error reading file: {e}")
 
+       
+        # ==============================
+        # PROSES NLP
+        # ==============================
         if teks_input:
+            # hapus hasil sebelumnya
             StemmingResult.objects.all().delete()
 
+            # ==========================================
+            # LOAD DATABASE 
+            # ==========================================
             db_kamus_sunda = {
                 str(kata).lower().strip() 
                 for kata in KamusSunda.objects.values_list('kata_dasar', flat=True) 
@@ -181,67 +190,90 @@ def stemming_process(request):
                 if kata
             }
 
+            # ==========================================
+            # CLEANSING
+            # ==========================================
             proses = strip_tags(teks_input)
-            proses = re.sub(r'[^a-zA-ZéÉ\s]', ' ', proses)
-            proses = re.sub(r'\s+', ' ', proses).strip()
+            # hapus karakter selain huruf
+            proses = re.sub(
+                r'[^a-zA-ZéÉ\s]', ' ', proses
+            )
+            # hapus spasi berlebih
+            proses = re.sub(
+                r'\s+', ' ', proses).strip()
+
+            # ==========================================
+            # CASE FOLDING
+            # ==========================================
             proses = proses.lower()
 
+            # ==========================================
+            # TOKENIZING (NLTK)
+            # ==========================================
             tokens = word_tokenize(proses)
+            print("\n=== DEBUG ===")
+            print("Ada di proses :", "" in proses)
+            print("Ada di token  :", "" in tokens)
+            print("Ada di stopword :", "" in db_stopwords)
 
+            # ==========================================
+            # STOPWORD REMOVAL
+            # ==========================================
             filtered = [
                 t for t in tokens 
                 if t not in db_stopwords and len(t) > 1
             ]
+            print("Ada di filtered :", "" in filtered)
 
-            # Inisialisasi Sastrawi Indonesia
-            factory = StemmerFactory()
-            stemmer_indo = factory.create_stemmer()
 
+            # ==========================================
+            # STEMMING ECS
+            # ==========================================
             objs = []
-            kata_valid_sunda_count = 0
-            kata_valid_indo_count = 0
-
+            kata_valid_count = 0
             for kata in filtered:
-                # 1. Jalankan ECS Sunda (Adaptasi)
-                hasil_sunda, is_valid_sunda = ecs_sunda(kata, db_kamus_sunda)
+                hasil_stem, is_valid = ecs_sunda(
+                    kata, db_kamus_sunda
+                )
 
-                # 2. Jalankan ECS Indonesia (Sastrawi)
-                hasil_indo = stemmer_indo.stem(kata)
-                is_valid_indo = hasil_indo in db_kamus_sunda
+                # is_valid = False
+                # factory = StemmerFactory()
+                # stemmer = factory.create_stemmer()
+                # output   = stemmer.stem(kata)
 
-                if is_valid_sunda:
-                    kata_valid_sunda_count += 1
-
-                if is_valid_indo:
-                    kata_valid_indo_count += 1
+                # tokens2 = word_tokenize(output)
+                # output3 = sorted(tokens2)
+                # output4 = ' '.join([str(e) for e in output3])
+                if is_valid:
+                    kata_valid_count += 1
 
                 objs.append(
                     StemmingResult(
                         tokens=kata,
-                        stem=hasil_sunda,
-                        is_correct=is_valid_sunda,
-                        status_manual=hasil_indo
+                        stem=hasil_stem,
+                        is_correct=is_valid,
+                        status_manual="Otomatis"
                     )
                 )
 
+            # ==========================================
             # SIMPAN KE DATABASE
+            # ==========================================
             if objs:
                 StemmingResult.objects.bulk_create(objs)
 
-            # EVALUASI AKURASI GANDA
+            # ==========================================
+            # EVALUASI
+            # ==========================================
             total_kata = len(filtered)
-            
-            akurasi_sunda = (
-                kata_valid_sunda_count / total_kata * 100
+            akurasi = (
+                kata_valid_count / total_kata * 100
                 if total_kata > 0 else 0
             )
 
-            akurasi_indo = (
-                kata_valid_indo_count / total_kata * 100
-                if total_kata > 0 else 0
-            )
-
+            # ==========================================
             # CONTEXT KE HTML
+            # ==========================================
             context = {
                 'dataset': teks_input,
                 'proses': proses,
@@ -249,14 +281,18 @@ def stemming_process(request):
                 'remove_stopword': filtered,
                 'stemming_data': StemmingResult.objects.all(),
                 'total_kata': total_kata,
-                'kata_benar_sunda': kata_valid_sunda_count,
-                'akurasi_sunda': round(akurasi_sunda, 2),
-                'kata_benar_indo': kata_valid_indo_count,
-                'akurasi_indo': round(akurasi_indo, 2),
-                'running_time': round(time.time() - start_time, 4),
+                'kata_benar': kata_valid_count,
+                'akurasi': round(akurasi, 2),
+                'running_time': round(
+                    time.time() - start_time,4
+                ),
             }
 
-    return render(request, 'hasil.html', context)
+    return render(
+        request,
+        'hasil.html',
+        context
+    )
 
 
 # ==============================
